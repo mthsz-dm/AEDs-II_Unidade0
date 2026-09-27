@@ -1,6 +1,7 @@
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public abstract class Produto {
 	
@@ -18,7 +19,7 @@ public abstract class Produto {
      */
 	private void init(String desc, double precoCusto, double margemLucro) {
 		
-		if ((desc.length() >= 3) && (precoCusto > 0.0) && (margemLucro > 0.0)) {
+		if ((desc != null) && (desc.length() >= 3) && (precoCusto > 0.0) && (margemLucro > 0.0)) {
 			descricao = desc;
 			this.precoCusto = precoCusto;
 			this.margemLucro = margemLucro;
@@ -63,9 +64,9 @@ public abstract class Produto {
     @Override
 	public String toString() {
     	
-    	NumberFormat moeda = NumberFormat.getCurrencyInstance();
-    	
-    	return String.format("NOME: " + descricao + ": " + moeda.format(valorDeVenda()));
+    	NumberFormat moeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
+
+    	return "NOME: " + descricao + ": " + moeda.format(valorDeVenda());
 	}
     
     /**
@@ -75,7 +76,23 @@ public abstract class Produto {
      */
     @Override
     public boolean equals(Object obj) {
-        return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Produto)) {
+            return false;
+        }
+        Produto outro = (Produto) obj;
+        return this.descricao.equalsIgnoreCase(outro.descricao);
+    }
+
+    /**
+     * Código hash coerente com equals: baseado na descrição, sem diferenciar maiúsculas/minúsculas.
+     * @return Código hash do produto
+     */
+    @Override
+    public int hashCode() {
+        return descricao.toLowerCase().hashCode();
     }
     
     /**
